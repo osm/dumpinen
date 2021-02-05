@@ -15,6 +15,7 @@ func main() {
 	// Setup the command line flags.
 	addr := flag.String("addr", "https://dumpinen.com", "dumpinen address")
 	cred := flag.String("cred", "", "credentials, format as user:pass")
+	contentType := flag.String("content-type", "", "set a custom content type for the dump")
 	deleteAfter := flag.String("delete-after", "", "delete after the given duration")
 	id := flag.String("id", "", "id to retrieve from the dumpinen server")
 	flen.SetEnvPrefix("DUMPINEN")
@@ -40,6 +41,10 @@ func main() {
 			log.Fatalf("error: %v", err)
 		}
 		opts = append(opts, opt)
+	}
+
+	if *contentType != "" {
+		opts = append(opts, dumpinen.WithContentType(*contentType))
 	}
 
 	// Initialize the client.

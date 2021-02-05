@@ -16,6 +16,7 @@ type dumpinen struct {
 	username    string
 	password    string
 	deleteAfter *string
+	contentType *string
 }
 
 // NewClient initializes a new dumpinen client.
@@ -65,6 +66,13 @@ func WithDeleteAfter(dur string) (Option, error) {
 	}, nil
 }
 
+// WithContentType sets the content type for the dumped file.
+func WithContentType(ct string) Option {
+	return func(d *dumpinen) {
+		d.contentType = &ct
+	}
+}
+
 // Dump takes a io.Reader and uploads the contents to the dumpinen server.
 func (d *dumpinen) Dump(r io.Reader) (string, error) {
 	req, err := http.NewRequest("POST", d.addr, r)
@@ -76,9 +84,17 @@ func (d *dumpinen) Dump(r io.Reader) (string, error) {
 		req.SetBasicAuth(d.username, d.password)
 	}
 
-	if d.deleteAfter != nil {
+	if d.deleteAfter != nil || d.contentType != nil {
 		q := req.URL.Query()
-		q.Add("deleteAfter", *d.deleteAfter)
+
+		if d.deleteAfter != nil {
+			q.Add("deleteAfter", *d.deleteAfter)
+		}
+
+		if d.contentType != nil {
+			q.Add("contentType", *d.contentType)
+		}
+
 		req.URL.RawQuery = q.Encode()
 	}
 
