@@ -110,7 +110,7 @@ func (d *dumpinen) Dump(r io.Reader) (string, error) {
 		return "", fmt.Errorf("server returned error: %s", body)
 	}
 
-	return fmt.Sprintf("%s/%s", d.addr, string(body)), nil
+	return fmt.Sprintf("%s", string(body)), nil
 }
 
 // Get tries to fetch the given id from the dumpinen server.
